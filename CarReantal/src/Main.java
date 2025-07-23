@@ -1,15 +1,45 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import entities.Car;
+import entities.CarRental;
+import service.BrazilTaxService;
+import service.RentalService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        Locale.setDefault(Locale.US);
+        Scanner sc = new Scanner(System.in);
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        System.out.println("Enter whit the infomation");
+        System.out.print("Model of car: ");
+        String carModel = sc.nextLine();
+        System.out.print("Start(dd/MM/yyyy hh:mm): ");
+        LocalDateTime start = LocalDateTime.parse(sc.nextLine(),fmt);
+        System.out.print("Finish(dd/MM/yyyy hh:mm): ");
+        LocalDateTime finish = LocalDateTime.parse(sc.nextLine(),fmt);
+
+        CarRental cr =new CarRental(start,finish, new Car(carModel));
+
+        System.out.print("Enter whith price per hour: ");
+        double pricePerHour = sc.nextDouble();
+        System.out.print("Enter whith price per day: ");
+        double pricePerDay = sc.nextDouble();
+
+        RentalService rentalService = new RentalService(pricePerHour,pricePerDay,new BrazilTaxService());
+
+        rentalService.processInvoice(cr);
+
+        System.out.println("Invoice: ");
+        System.out.println("Basic Payment: "+String.format("%.2f", cr.getInvoice().getBasicPayment()));
+        System.out.println("Tax: "+ String.format("%.2f", cr.getInvoice().getTax()));
+        System.out.println("Total Payment: "+ String.format("%.2f", cr.getInvoice().getTotalPayment()));
+
+
+        sc.close();
     }
 }
